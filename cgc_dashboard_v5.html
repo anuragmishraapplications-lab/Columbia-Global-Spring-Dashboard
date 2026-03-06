@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring 2026 · Columbia Global Centers Student Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   COLUMBIA GLOBAL BRAND — Official Palette (June 2024)
+   Lead: #7287e2 | Supporting: Brown, Light Blue, Green,
+   Yellow, Orange, Red | Black, White
+═══════════════════════════════════════════════════════ */
+:root {
+  --cg-blue:       #7287e2;   /* lead brand blue */
+  --cg-blue-dark:  #4a62c8;
+  --cg-blue-deep:  #2a3f8f;
+  --cg-brown:      #837569;
+  --cg-lightblue:  #c0d6df;
+  --cg-green:      #8aaa79;
+  --cg-yellow:     #e8d33f;
+  --cg-orange:     #dd8328;
+  --cg-red:        #f46748;
+  --black:         #000000;
+  --white:         #ffffff;
+  --off-white:     #f5f6fb;
+  --mid-grey:      #e8eaf2;
+  --muted:         #6b7280;
+  --border:        #d1d8f0;
+  --text:          #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--off-white);
+  color: var(--text);
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--black);
+  border-bottom: 3px solid var(--cg-blue);
+}
+.header-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-brand img {
+  height: 52px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+.header-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+}
+.header-text {
+  color: var(--white);
+}
+.header-text .eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--cg-lightblue);
+  margin-bottom: 3px;
+}
+.header-text h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--white);
+  line-height: 1.15;
+}
+.header-text h1 em {
+  font-style: italic;
+  color: var(--cg-blue);
+}
+.header-meta {
+  text-align: right;
+  color: var(--cg-lightblue);
+}
+.header-meta .season {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+}
+.header-meta .year {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  color: var(--white);
+  line-height: 1;
+}
+
+/* ── NAV ── */
+.site-nav {
+  background: #111111;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 0 48px;
+  display: flex;
+  gap: 0;
+}
+.nav-tab {
+  padding: 13px 22px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--white); border-bottom-color: rgba(114,135,226,0.5); }
+.nav-tab.active { color: var(--white); border-bottom-color: var(--cg-blue); }
+
+/* ── MAIN VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+.container { padding: 32px 48px; max-width: 1500px; margin: 0 auto; }
+
+/* ── KPI STRIP ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.kpi {
+  background: var(--white);
+  padding: 22px 20px;
+  position: relative;
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--cg-blue);
+}
+.kpi:nth-child(2)::before { background: var(--cg-lightblue); }
+.kpi:nth-child(3)::before { background: var(--cg-orange); }
+.kpi:nth-child(4)::before { background: var(--cg-green); }
+.kpi:nth-child(5)::before { background: var(--cg-brown); }
+.kpi-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.kpi-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--black);
+  line-height: 1;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  margin-top: 32px;
+}
+.section-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  white-space: nowrap;
+}
+.section-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 24px;
+}
+.card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 3px;
+}
+.card-sub {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-wide { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+
+/* ── COUNTRIES TABLE ── */
+.ctable { width: 100%; border-collapse: collapse; }
+.ctable th {
+  font-size: 8.5px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted); padding: 10px 8px; text-align: left;
+  border-bottom: 2px solid var(--border); background: #fafbfe;
+}
+.ctable td {
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--mid-grey);
+  font-size: 12.5px;
+  vertical-align: middle;
+}
+.ctable tbody tr:hover td { background: #f0f3fc; }
+.cgc-link {
+  color: var(--cg-blue-dark);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cgc-link:hover { color: var(--cg-orange); text-decoration: underline; }
+.cgc-badge {
+  display: inline-block;
+  background: var(--cg-blue);
+  color: var(--white);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+.bar-wrap { display: flex; align-items: center; gap: 8px; }
+.bar {
+  height: 7px;
+  background: var(--cg-blue);
+  opacity: 0.35;
+  border-radius: 1px;
+  min-width: 2px;
+}
+.bar.cgc-bar { background: var(--cg-orange); opacity: 0.6; }
+.num-cell { font-size: 13px; color: var(--black); font-weight: 600; }
+.pct-cell { font-size: 11px; color: var(--muted); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 32px;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+.modal {
+  background: var(--off-white);
+  width: 100%;
+  max-width: 980px;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal header — brand blue */
+.modal-header {
+  background: var(--cg-blue-deep);
+  padding: 0;
+  border-bottom: 3px solid var(--cg-blue);
+}
+.modal-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 32px 20px;
+}
+.modal-eyebrow {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--cg-lightblue); margin-bottom: 6px;
+}
+.modal-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 30px; font-weight: 400; color: var(--white); line-height: 1;
+}
+.modal-city {
+  font-size: 12px; color: var(--cg-lightblue); margin-top: 5px; letter-spacing: 1px;
+}
+.modal-thinking {
+  font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 1px;
+  font-style: italic; margin-top: 2px;
+}
+.modal-close {
+  background: rgba(255,255,255,0.1); border: none; color: var(--white);
+  width: 34px; height: 34px; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px; flex-shrink: 0;
+}
+.modal-close:hover { background: rgba(255,255,255,0.2); }
+
+/* KPI strip inside modal */
+.modal-kpis {
+  display: flex;
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.modal-kpi {
+  flex: 1;
+  padding: 14px 20px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+.modal-kpi:last-child { border-right: none; }
+.modal-kpi .val {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px; color: var(--cg-blue); line-height: 1;
+}
+.modal-kpi .lbl {
+  font-size: 8.5px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--cg-lightblue); margin-top: 4px;
+}
+
+/* Modal body grid */
+.modal-body {
+  padding: 24px 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.modal-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  border-top: 3px solid var(--cg-blue);
+}
+.modal-card.orange-top { border-top-color: var(--cg-orange); }
+.modal-card.green-top { border-top-color: var(--cg-green); }
+.modal-card.lb-top { border-top-color: var(--cg-lightblue); }
+.modal-card h3 {
+  font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; font-weight: 700;
+}
+.ranked-list { list-style: none; }
+.ranked-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid var(--mid-grey); font-size: 12.5px;
+}
+.ranked-list li:last-child { border-bottom: none; }
+.rank-n { font-size: 9px; color: var(--muted); min-width: 16px; }
+.rank-name { flex: 1; }
+.rank-count { font-size: 12px; font-weight: 700; color: var(--black); }
+.rank-bar {
+  height: 5px; background: var(--mid-grey);
+  border-radius: 1px; overflow: hidden; margin-top: 3px; flex: 0 0 70px;
+}
+.rank-bar-fill { height: 100%; background: var(--cg-blue); border-radius: 1px; }
+
+/* Bucket bars (like exemplar image) */
+.bucket-row {
+  display: flex; gap: 8px; align-items: flex-end; margin: 10px 0 4px;
+}
+.bucket {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.bucket-bar-wrap {
+  width: 100%; background: var(--mid-grey); border-radius: 2px;
+  overflow: hidden; height: 72px; display: flex; align-items: flex-end;
+}
+.bucket-fill {
+  width: 100%; background: var(--cg-blue-deep); transition: height 0.5s ease;
+}
+.bucket-fill.orange { background: var(--cg-orange); }
+.bucket-fill.green { background: var(--cg-green); }
+.bucket-label {
+  font-size: 9px; color: var(--muted); text-align: center; line-height: 1.2;
+}
+.bucket-val {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14px; font-weight: 400; color: var(--black);
+}
+
+/* Level split bar */
+.level-split {
+  display: flex; height: 18px; border-radius: 2px; overflow: hidden; margin: 10px 0 6px;
+}
+.level-grad { background: var(--cg-blue-deep); display:flex; align-items:center; justify-content:center; }
+.level-ug { background: var(--cg-lightblue); display:flex; align-items:center; justify-content:center; }
+.level-label { font-size: 9px; color: var(--white); font-weight: 700; padding: 0 6px; white-space:nowrap; }
+.level-legend { display:flex; gap:16px; font-size:11px; color:var(--muted); margin-top:6px; }
+.legend-dot { width:9px; height:9px; border-radius:1px; display:inline-block; margin-right:4px; vertical-align:middle; }
+
+canvas { display: block; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--black);
+  color: rgba(255,255,255,0.4);
+  padding: 18px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-top: 3px solid var(--cg-blue);
+  margin-top: 40px;
+}
+footer .footer-brand {
+  display: flex; align-items: center; gap: 14px;
+}
+footer img {
+  height: 32px; opacity: 0.7; border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: repeat(3,1fr); }
+  .grid-2, .grid-wide { grid-template-columns: 1fr; }
+  .modal-body { grid-template-columns: 1fr; }
+  .modal-kpis { flex-wrap: wrap; }
+  .container, .site-nav, footer { padding-left: 20px; padding-right: 20px; }
+  .header-band { padding: 16px 20px; flex-wrap: wrap; gap: 12px; }
+}
+
+/* ── PDF DOWNLOAD BUTTON ── */
+.pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--white);
+  color: var(--cg-blue-deep);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+.pdf-btn:hover {
+  background: var(--cg-blue);
+  color: var(--white);
+  border-color: var(--cg-blue);
+}
+.pdf-btn svg {
+  width: 13px; height: 13px; flex-shrink: 0;
+}
+.pdf-btn.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.pdf-btn.loading span.btn-text::after {
+  content: '…';
+}
+/* Print-specific: hide close & pdf btn during capture */
+.modal-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="site-header">
+  <div class="header-band">
+    <div class="header-brand">
+      <img src="data:image/png;base64,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" alt="Columbia Global">
+      <div class="header-divider"></div>
+      <div class="header-text">
+        <div class="eyebrow">Spring 2026 · Enrollment Data</div>
+        <h1>Enrolled <em>International</em> Students</h1>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="season">Academic Year</span>
+      <span class="year">2025 – 26</span>
+    </div>
+  </div>
+  <nav class="site-nav">
+    <div class="nav-tab active" onclick="showView('overview',this)">Overview</div>
+    <div class="nav-tab" onclick="showView('countries',this)">Countries</div>
+    <div class="nav-tab" onclick="showView('academic',this)">Academic Profile</div>
+    <div class="nav-tab" onclick="showView('timeline',this)">Enrollment Timeline</div>
+  </nav>
+</header>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: OVERVIEW
+══════════════════════════════════════════ -->
+<div class="view active" id="view-overview">
+<div class="container">
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Students</div>
+      <div class="kpi-value">6,670</div>
+      <div class="kpi-sub">Enrolled international</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Countries Represented</div>
+      <div class="kpi-value">46</div>
+      <div class="kpi-sub">Citizenship countries</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">CGC Country Students</div>
+      <div class="kpi-value">97.6%</div>
+      <div class="kpi-sub">6,511 of 6,670</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Graduate Students</div>
+      <div class="kpi-value">88.2%</div>
+      <div class="kpi-sub">5,882 students</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Schools</div>
+      <div class="kpi-value">18</div>
+      <div class="kpi-sub">Across Columbia</div>
+    </div>
+  </div>
+
+  <div class="grid-wide" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Top 10 Countries by Citizenship</div>
+      <div class="card-sub">CGC Centre countries shown in brand orange · Click any CGC country name to explore</div>
+      <div style="height:300px;"><canvas id="ovCountryChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Graduate vs. Undergraduate</div>
+      <div class="card-sub">Academic level breakdown</div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center;">
+        <canvas id="ovLevelChart" style="max-height:260px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Enrollment by School</div>
+      <div class="card-sub">Top 10 Columbia schools</div>
+      <div style="height:280px;"><canvas id="ovSchoolChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">CGC Centre Countries — Share of Total</div>
+      <div class="card-sub">9 countries with active Columbia Global Centres</div>
+      <div style="height:280px;display:flex;align-items:center;justify-content:center;">
+        <canvas id="ovCgcChart" style="max-height:260px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: COUNTRIES
+══════════════════════════════════════════ -->
+<div class="view" id="view-countries">
+<div class="container">
+  <div class="section-header"><h2>All 46 Citizenship Countries</h2></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:18px;">
+    Countries marked <span class="cgc-badge">CGC</span> have an active Columbia Global Centre — click to explore the full centre profile.
+  </p>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="ctable">
+      <thead>
+        <tr>
+          <th style="padding-left:18px;width:32px;">#</th>
+          <th>Country</th>
+          <th>Students</th>
+          <th style="width:200px;">Share of total</th>
+          <th>% Total</th>
+          <th>Grad %</th>
+          <th>Top School</th>
+        </tr>
+      </thead>
+      <tbody id="countriesTableBody"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: ACADEMIC PROFILE
+══════════════════════════════════════════ -->
+<div class="view" id="view-academic">
+<div class="container">
+  <div class="section-header"><h2>Academic Profile</h2></div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">All 18 Schools — Enrollment</div>
+      <div class="card-sub">International students by school</div>
+      <div style="height:400px;"><canvas id="acSchoolChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 12 Departments</div>
+      <div class="card-sub">By international enrollment</div>
+      <div style="height:400px;"><canvas id="acDeptChart"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Graduate vs. Undergraduate by School</div>
+      <div class="card-sub">Top 8 schools — stacked comparison</div>
+      <div style="height:280px;"><canvas id="acLevelChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">CGC Country Students — Top Schools</div>
+      <div class="card-sub">Where students from CGC-centre countries study</div>
+      <div style="height:280px;"><canvas id="acCgcSchoolChart"></canvas></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: TIMELINE
+══════════════════════════════════════════ -->
+<div class="view" id="view-timeline">
+<div class="container">
+  <div class="section-header"><h2>Enrollment Timeline</h2></div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">First Term of Study</div>
+      <div class="card-sub">When students first enrolled</div>
+      <div style="height:280px;"><canvas id="tlFirstTermChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Expected Graduation Term</div>
+      <div class="card-sub">Projected completion for all enrolled students</div>
+      <div style="height:280px;"><canvas id="tlGradChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Graduating This Semester (Spring 2026) — by CGC Centre Country</div>
+    <div class="card-sub">Students from CGC countries expected to graduate Spring 2026</div>
+    <div style="height:220px;"><canvas id="tlGradNowChart"></canvas></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <div class="footer-brand">
+    <img src="data:image/png;base64,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" alt="Columbia Global">
+    <span>Columbia University Enrolled Student Dashboard v2</span>
+  </div>
+  <span>Spring 2026 · N = 6,670 International Students · 46 Countries</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+// BRAND COLOURS (official Columbia Global palette)
+// ═══════════════════════════════════════════════════
+const CG_BLUE     = '#7287e2';
+const CG_DEEP     = '#2a3f8f';
+const CG_DARK     = '#4a62c8';
+const CG_BROWN    = '#837569';
+const CG_LBLUE    = '#c0d6df';
+const CG_GREEN    = '#8aaa79';
+const CG_YELLOW   = '#e8d33f';
+const CG_ORANGE   = '#dd8328';
+const CG_RED      = '#f46748';
+const BLACK       = '#000000';
+const MUTED       = '#6b7280';
+
+// Chart palette — max 4 per design per brand guidelines
+const PALETTE4 = [CG_BLUE, CG_ORANGE, CG_GREEN, CG_BROWN];
+const PALETTE_CHART = [CG_BLUE,CG_ORANGE,CG_GREEN,CG_BROWN,CG_LBLUE,CG_RED,CG_YELLOW,CG_DARK,'#b0b8d8','#a8c4a0'];
+
+const TT = {
+  backgroundColor: '#111827',
+  borderColor: CG_BLUE,
+  borderWidth: 1,
+  titleColor: '#ffffff',
+  bodyColor: '#c0d6df',
+  padding: 10,
+  titleFont: {family:"'Source Sans Pro',Arial",size:12},
+  bodyFont:  {family:"'Source Sans Pro',Arial",size:11}
+};
+
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const TOTAL = 6670;
+const CGC_CENTRES = new Set(['China','India','France','Brazil','Israel','Turkey','Kenya','Chile','Jordan']);
+
+const ALL_COUNTRIES = [
+  {n:"China",     c:4667, grad:4287, ug:380,  topSchool:"Fu Eng. (Grad)"},
+  {n:"India",     c:966,  grad:891,  ug:75,   topSchool:"Fu Eng. (Grad)"},
+  {n:"France",    c:237,  grad:167,  ug:70,   topSchool:"Fu Eng. (Grad)"},
+  {n:"Brazil",    c:201,  grad:142,  ug:59,   topSchool:"Business School"},
+  {n:"Israel",    c:126,  grad:57,   ug:69,   topSchool:"General Studies"},
+  {n:"Turkey",    c:104,  grad:75,   ug:29,   topSchool:"Business School"},
+  {n:"Greece",    c:81,   grad:null, ug:null, topSchool:"—"},
+  {n:"Chile",     c:81,   grad:74,   ug:7,    topSchool:"Business School"},
+  {n:"Kenya",     c:29,   grad:14,   ug:15,   topSchool:"Columbia College"},
+  {n:"Canada",    c:24,   grad:null, ug:null, topSchool:"—"},
+  {n:"Hong Kong", c:23,   grad:null, ug:null, topSchool:"—"},
+  {n:"Taiwan",    c:18,   grad:null, ug:null, topSchool:"—"},
+  {n:"United Kingdom",c:13,grad:null,ug:null, topSchool:"—"},
+  {n:"Jordan",    c:11,   grad:4,    ug:7,    topSchool:"Fu Eng. (UG)"},
+  {n:"Italy",     c:8,    grad:null, ug:null, topSchool:"—"},
+  {n:"Tunisia",   c:8,    grad:null, ug:null, topSchool:"—"},
+  {n:"Morocco",   c:7,    grad:null, ug:null, topSchool:"—"},
+  {n:"Portugal",  c:7,    grad:null, ug:null, topSchool:"—"},
+  {n:"Spain",     c:6,    grad:null, ug:null, topSchool:"—"},
+  {n:"Australia", c:6,    grad:null, ug:null, topSchool:"—"},
+  {n:"Singapore", c:5,    grad:null, ug:null, topSchool:"—"},
+  {n:"South Korea",c:5,  grad:null, ug:null, topSchool:"—"},
+  {n:"Switzerland",c:5,  grad:null, ug:null, topSchool:"—"},
+  {n:"Macau",     c:4,    grad:null, ug:null, topSchool:"—"},
+  {n:"Russia",    c:3,    grad:null, ug:null, topSchool:"—"},
+  {n:"Belgium",   c:2,    grad:null, ug:null, topSchool:"—"},
+  {n:"Ireland",   c:2,    grad:null, ug:null, topSchool:"—"},
+  {n:"Japan",     c:2,    grad:null, ug:null, topSchool:"—"},
+  {n:"Ukraine",   c:2,    grad:null, ug:null, topSchool:"—"},
+  {n:"Netherlands",c:1,  grad:null, ug:null, topSchool:"—"},
+  {n:"Argentina", c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Togo",      c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Malta",     c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Vietnam",   c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Cyprus",    c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Malaysia",  c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"United States",c:1,grad:null, ug:null, topSchool:"—"},
+  {n:"Cameroon",  c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Germany",   c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Romania",   c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"New Zealand",c:1,  grad:null, ug:null, topSchool:"—"},
+  {n:"Syria",     c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Saudi Arabia",c:1, grad:null, ug:null, topSchool:"—"},
+  {n:"Costa Rica",c:1,   grad:null, ug:null, topSchool:"—"},
+  {n:"Iran",      c:1,    grad:null, ug:null, topSchool:"—"},
+  {n:"Austria",   c:1,    grad:null, ug:null, topSchool:"—"}
+];
+
+const CGC_DATA = {
+  "China":  { city:"Beijing",          total:4667, grad:4287, ug:380,
+    schools:[["Fu Eng. (Grad)",1082],["GSAS",1041],["SPS",760],["SIPA",341],["Mailman",290],["Business",217]],
+    depts:  [["SPS",756],["Statistics",460],["IEOR",448],["SIPA",343],["Computer Science",259],["Biostatistics",207]],
+    firstTerm:[["Fall 2025",2016],["Summer 2025",1055],["Fall 2024",555],["Spring 2026",228],["Summer 2024",180]],
+    gradTerm: [["Fall 2026",2137],["Spring 2026",868],["Spring 2027",800],["Spring 2029",173],["Spring 2028",159]] },
+  "India":  { city:"Mumbai",           total:966,  grad:891, ug:75,
+    schools:[["Fu Eng. (Grad)",320],["Business",166],["SPS",109],["SIPA",85],["GSAS",80],["Mailman",66]],
+    depts:  [["Computer Science",181],["Business",160],["SPS",109],["SIPA",87],["IEOR",50],["Statistics",46]],
+    firstTerm:[["Summer 2025",357],["Fall 2025",201],["Fall 2024",82],["Summer 2024",73],["Spring 2025",69]],
+    gradTerm: [["Fall 2026",338],["Spring 2026",246],["Spring 2027",176],["Spring 2029",41],["Spring 2028",39]] },
+  "France": { city:"Paris (Reid Hall)", total:237,  grad:167, ug:70,
+    schools:[["Fu Eng. (Grad)",56],["General Studies",38],["GSAS",33],["Columbia College",25],["SIPA",18],["Law",16]],
+    depts:  [["IEOR",35],["Economics",21],["SIPA",18],["Columbia College",17],["Political Science",16],["Law",16]],
+    firstTerm:[["Fall 2025",74],["Summer 2025",65],["Fall 2024",36],["Spring 2026",12],["Fall 2023",12]],
+    gradTerm: [["Spring 2026",78],["Fall 2026",60],["Spring 2027",44],["Spring 2029",16],["Spring 2028",10]] },
+  "Brazil": { city:"Rio de Janeiro",   total:201,  grad:142, ug:59,
+    schools:[["Business",63],["General Studies",27],["Law",22],["GSAS",18],["Fu Eng. (UG)",16],["SIPA",15]],
+    depts:  [["Business",63],["SIPA",15],["Economics",12],["SPS",10],["Computer Science",8],["Law",8]],
+    firstTerm:[["Fall 2025",50],["Summer 2025",47],["Fall 2024",28],["Summer 2024",24],["Spring 2026",19]],
+    gradTerm: [["Spring 2026",85],["Spring 2027",48],["Spring 2029",18],["Spring 2028",14],["Fall 2026",9]] },
+  "Israel": { city:"Tel Aviv",         total:126,  grad:57, ug:69,
+    schools:[["General Studies",63],["Business",23],["GSAS",11],["SIPA",8],["Law",6],["Columbia College",6]],
+    depts:  [["General Studies",33],["Business",22],["Computer Science",13],["Economics",10],["SIPA",8],["Law",6]],
+    firstTerm:[["Fall 2024",25],["Fall 2025",20],["Summer 2025",19],["Fall 2023",17],["Spring 2026",14]],
+    gradTerm: [["Spring 2026",32],["Spring 2027",29],["Spring 2029",17],["Spring 2028",16],["Fall 2026",6]] },
+  "Turkey": { city:"Istanbul",         total:104,  grad:75, ug:29,
+    schools:[["Business",22],["GSAS",21],["Fu Eng. (Grad)",17],["Fu Eng. (UG)",11],["General Studies",10],["Law",8]],
+    depts:  [["Business",22],["Economics",10],["Computer Science",9],["IEOR",6],["Electrical Eng.",4],["Law",4]],
+    firstTerm:[["Fall 2025",23],["Summer 2025",19],["Fall 2024",15],["Fall 2023",10],["Summer 2024",8]],
+    gradTerm: [["Spring 2027",27],["Spring 2026",25],["Fall 2026",14],["Spring 2029",7],["Spring 2028",6]] },
+  "Kenya":  { city:"Nairobi",          total:29,   grad:14, ug:15,
+    schools:[["Columbia College",12],["GSAS",3],["SIPA",3],["Law",3],["Climate School",2],["Fu Eng. (Grad)",2]],
+    depts:  [["Columbia College",8],["SIPA",3],["Computer Science",2],["History",2],["Climate School",2],["Law",2]],
+    firstTerm:[["Fall 2025",7],["Fall 2024",7],["Spring 2026",4],["Spring 2025",3],["Fall 2023",3]],
+    gradTerm: [["Spring 2026",6],["Spring 2029",6],["Spring 2028",6],["Spring 2027",5],["Summer 2026",1]] },
+  "Chile":  { city:"Santiago",         total:81,   grad:74, ug:7,
+    schools:[["Business",36],["GSAS",10],["Law",7],["Fu Eng. (Grad)",6],["SIPA",6],["SPS",5]],
+    depts:  [["Business",34],["SIPA",6],["Columbia College",5],["SPS",5],["IEOR",4],["Economics",4]],
+    firstTerm:[["Summer 2025",20],["Fall 2025",13],["Fall 2024",9],["Summer 2024",9],["Spring 2026",9]],
+    gradTerm: [["Spring 2026",26],["Spring 2027",25],["Fall 2026",9],["Spring 2029",7],["Spring 2028",5]] },
+  "Jordan": { city:"Amman",            total:11,   grad:4, ug:7,
+    schools:[["Fu Eng. (UG)",5],["Columbia College",2],["GSAPP",1],["GSAS",1],["SIPA",1]],
+    depts:  [["Mechanical Eng.",2],["Economics",2],["Architecture",1],["Computer Science",1],["Engineering",1]],
+    firstTerm:[["Fall 2023",3],["Fall 2022",3],["Fall 2025",3],["Fall 2024",2]],
+    gradTerm: [["Spring 2026",5],["Spring 2027",3],["Spring 2029",1],["Spring 2032",1],["Summer 2028",1]] }
+};
+
+const SCHOOLS = [
+  ["Fu Eng. (Grad)",1535],["GSAS",1243],["SPS",936],["Business",613],
+  ["SIPA",489],["Mailman",321],["General Studies",316],["Columbia College",260],
+  ["Law",228],["GSAPP",196],["Fu Eng. (UG)",175],["Arts",119],
+  ["Climate School",85],["Social Work",68],["Vagelos",42],["Journalism",27],
+  ["Dental",10],["Nursing",7]
+];
+const DEPARTMENTS = [
+  ["SPS",929],["Business",569],["IEOR",565],["Computer Science",504],
+  ["SIPA",493],["Statistics",477],["Electrical Eng.",252],["Economics",211],
+  ["Biostatistics",211],["Architecture",196],["QMSS",173],["Columbia College",154]
+];
+const FIRST_TERMS = [
+  ["Fall 2025",2483],["Summer 2025",1628],["Fall 2024",788],
+  ["Spring 2026",367],["Summer 2024",322],["Spring 2025",297],
+  ["Fall 2023",249],["Fall 2022",141],["Fall 2021",95],["Summer 2023",89]
+];
+const GRAD_TERMS = [
+  ["Fall 2026",2626],["Spring 2026",1431],["Spring 2027",1202],
+  ["Spring 2029",310],["Spring 2028",278],["Spring 2030",191],
+  ["Summer 2026",165],["Spring 2031",121],["Spring 2032",66],["Summer 2027",49]
+];
+
+// ═══════════════════════════════════════════════════
+// VIEW SWITCHER
+// ═══════════════════════════════════════════════════
+function showView(id, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// MODAL — CGC CENTRE ONE-PAGER
+// ═══════════════════════════════════════════════════
+function openCentre(country) {
+  window._cgcCountry = country;
+  const d = CGC_DATA[country];
+  if (!d) return;
+  const gradPct = Math.round(d.grad / d.total * 100);
+  const ugPct   = 100 - gradPct;
+  const maxS    = d.schools[0][1];
+  const maxD    = d.depts[0][1];
+  const maxG    = Math.max(...d.gradTerm.map(x=>x[1]));
+  const maxF    = Math.max(...d.firstTerm.map(x=>x[1]));
+
+  const schoolRows = d.schools.map((s,i) => `
+    <li>
+      <span class="rank-n">${i+1}.</span>
+      <span class="rank-name">${s[0]}</span>
+      <span class="rank-count">${s[1]}</span>
+      <div class="rank-bar"><div class="rank-bar-fill" style="width:${Math.round(s[1]/maxS*100)}%;background:${i===0?CG_ORANGE:CG_BLUE};"></div></div>
+    </li>`).join('');
+
+  const deptRows = d.depts.map((s,i) => `
+    <li>
+      <span class="rank-n">${i+1}.</span>
+      <span class="rank-name">${s[0]}</span>
+      <span class="rank-count">${s[1]}</span>
+      <div class="rank-bar"><div class="rank-bar-fill" style="width:${Math.round(s[1]/maxD*100)}%;background:${CG_GREEN};"></div></div>
+    </li>`).join('');
+
+  const gradBuckets = d.gradTerm.map(([lbl,val]) => `
+    <div class="bucket">
+      <div class="bucket-val">${val}</div>
+      <div class="bucket-bar-wrap">
+        <div class="bucket-fill orange" style="height:${Math.round(val/maxG*100)}%;"></div>
+      </div>
+      <div class="bucket-label">${lbl}</div>
+    </div>`).join('');
+
+  const firstBuckets = d.firstTerm.map(([lbl,val]) => `
+    <div class="bucket">
+      <div class="bucket-val">${val}</div>
+      <div class="bucket-bar-wrap">
+        <div class="bucket-fill green" style="height:${Math.round(val/maxF*100)}%;"></div>
+      </div>
+      <div class="bucket-label">${lbl}</div>
+    </div>`).join('');
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <div class="modal-eyebrow">Columbia Global Centre · Spring 2026</div>
+          <div class="modal-title">${country}</div>
+          <div class="modal-city">📍 ${d.city}</div>
+          <div class="modal-thinking">Thinking + Doing</div>
+        </div>
+        <div class="modal-actions">
+          <button class="pdf-btn" id="pdf-dl-btn" onclick="downloadCentrePDF(window._cgcCountry)">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V4h3v4H12L8 12z"/><path d="M2 13h12v1.5H2z"/></svg>
+            <span class="btn-text">Download PDF</span>
+          </button>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+      <div class="modal-kpis">
+        <div class="modal-kpi"><div class="val">${d.total.toLocaleString()}</div><div class="lbl">Total Students</div></div>
+        <div class="modal-kpi"><div class="val">${d.grad.toLocaleString()}</div><div class="lbl">Graduate</div></div>
+        <div class="modal-kpi"><div class="val">${d.ug}</div><div class="lbl">Undergraduate</div></div>
+        <div class="modal-kpi"><div class="val">${gradPct}%</div><div class="lbl">Grad Rate</div></div>
+        <div class="modal-kpi"><div class="val">${d.schools.length}</div><div class="lbl">Schools</div></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-card orange-top">
+        <h3>Top Schools</h3>
+        <ul class="ranked-list">${schoolRows}</ul>
+      </div>
+      <div class="modal-card green-top">
+        <h3>Top Departments</h3>
+        <ul class="ranked-list">${deptRows}</ul>
+      </div>
+      <div class="modal-card lb-top">
+        <h3>Academic Level Split</h3>
+        <div class="level-split">
+          <div class="level-grad" style="width:${gradPct}%"><span class="level-label">Grad ${gradPct}%</span></div>
+          <div class="level-ug"   style="width:${ugPct}%"><span class="level-label" style="color:#2a3f8f;">UG ${ugPct}%</span></div>
+        </div>
+        <div class="level-legend">
+          <span><span class="legend-dot" style="background:#2a3f8f;"></span>Graduate: ${d.grad}</span>
+          <span><span class="legend-dot" style="background:#c0d6df;"></span>Undergraduate: ${d.ug}</span>
+        </div>
+        <div style="margin-top:18px;">
+          <h3 style="margin-bottom:10px;">First Term of Study</h3>
+          <div class="bucket-row">${firstBuckets}</div>
+        </div>
+      </div>
+      <div class="modal-card">
+        <h3>Expected Graduation Term</h3>
+        <div class="bucket-row">${gradBuckets}</div>
+        <div style="margin-top:10px;font-size:10px;color:var(--muted);letter-spacing:1px;">
+          ${d.gradTerm[0][1]} students graduating ${d.gradTerm[0][0]} &nbsp;·&nbsp;
+          ${d.gradTerm[1][1]} in ${d.gradTerm[1][0]}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target===document.getElementById('modal')) closeModal(); }
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+// ═══════════════════════════════════════════════════
+// COUNTRIES TABLE
+// ═══════════════════════════════════════════════════
+const tbody = document.getElementById('countriesTableBody');
+const maxC  = ALL_COUNTRIES[0].c;
+ALL_COUNTRIES.forEach((row,i) => {
+  const isCGC   = CGC_CENTRES.has(row.n);
+  const gradPct = row.grad ? Math.round(row.grad/row.c*100)+'%' : '—';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="padding-left:18px;color:var(--muted);font-size:10px;">${i+1}</td>
+    <td>${isCGC
+      ? `<span class="cgc-link" onclick="openCentreAndTrack('${row.n}')">${row.n}<span class="cgc-badge">CGC</span></span>`
+      : row.n}</td>
+    <td class="num-cell">${row.c.toLocaleString()}</td>
+    <td><div class="bar-wrap">
+      <div class="bar ${isCGC?'cgc-bar':''}" style="width:${Math.round(row.c/maxC*180)}px;"></div>
+    </div></td>
+    <td class="pct-cell">${(row.c/TOTAL*100).toFixed(1)}%</td>
+    <td class="pct-cell">${gradPct}</td>
+    <td style="font-size:11px;color:var(--muted);">${row.topSchool}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ═══════════════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════════════
+function hBar(id, labels, data, colors) {
+  return new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{ labels, datasets:[{ data, backgroundColor: colors||data.map((_,i)=>PALETTE_CHART[i%PALETTE_CHART.length]+'bb'), borderRadius:2, borderColor:'transparent' }] },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      animation:{duration:700,easing:'easeOutQuart'},
+      scales:{
+        x:{ grid:{color:'rgba(114,135,226,0.1)'}, ticks:{color:MUTED,font:{size:10}}, border:{color:'#d1d8f0'} },
+        y:{ grid:{display:false}, ticks:{color:BLACK,font:{size:11}}, border:{color:'#d1d8f0'} }
+      },
+      plugins:{ legend:{display:false}, tooltip:{...TT, callbacks:{ label:ctx=>` ${ctx.raw.toLocaleString()}` } } }
+    }
+  });
+}
+
+function vBar(id, labels, data, color) {
+  return new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{ labels, datasets:[{ data, backgroundColor: color||CG_BLUE+'bb', borderRadius:2 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      animation:{duration:700,easing:'easeOutQuart'},
+      scales:{
+        x:{ grid:{display:false}, ticks:{color:MUTED,font:{size:10},maxRotation:35}, border:{color:'#d1d8f0'} },
+        y:{ grid:{color:'rgba(114,135,226,0.1)'}, ticks:{color:MUTED,font:{size:10}}, border:{color:'#d1d8f0'} }
+      },
+      plugins:{ legend:{display:false}, tooltip:{...TT} }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// OVERVIEW CHARTS
+// ═══════════════════════════════════════════════════
+const top10 = ALL_COUNTRIES.slice(0,10);
+const ovChart = hBar('ovCountryChart',
+  top10.map(d=>d.n),
+  top10.map(d=>d.c),
+  top10.map(d => CGC_CENTRES.has(d.n) ? CG_ORANGE+'cc' : CG_BLUE+'99')
+);
+// Make CGC country bars clickable in overview chart
+document.getElementById('ovCountryChart').onclick = function(evt) {
+  const pts = ovChart.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, false);
+  if (pts.length) {
+    const label = top10[pts[0].index].n;
+    if (CGC_CENTRES.has(label)) openCentre(label);
+  }
+};
+document.getElementById('ovCountryChart').style.cursor = 'pointer';
+
+new Chart(document.getElementById('ovLevelChart'), {
+  type:'doughnut',
+  data:{ labels:['Graduate','Undergraduate'],
+         datasets:[{ data:[5882,788],
+           backgroundColor:[CG_DEEP,CG_LBLUE],
+           borderColor:'#f5f6fb', borderWidth:4, hoverOffset:6 }] },
+  options:{
+    cutout:'62%', responsive:true, maintainAspectRatio:false,
+    animation:{duration:700},
+    plugins:{
+      legend:{ display:true, position:'bottom', labels:{ color:MUTED, font:{size:11}, padding:16, boxWidth:12, boxHeight:12 } },
+      tooltip:{...TT, callbacks:{ label:ctx=>` ${ctx.label}: ${ctx.raw.toLocaleString()} (${(ctx.raw/TOTAL*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+hBar('ovSchoolChart',
+  SCHOOLS.slice(0,10).map(d=>d[0]),
+  SCHOOLS.slice(0,10).map(d=>d[1]),
+  SCHOOLS.slice(0,10).map((_,i)=>[CG_BLUE,CG_ORANGE,CG_GREEN,CG_BROWN,CG_LBLUE+'cc',CG_DEEP,CG_RED,CG_YELLOW+'cc',CG_BLUE+'66',CG_ORANGE+'66'][i])
+);
+
+new Chart(document.getElementById('ovCgcChart'), {
+  type:'doughnut',
+  data:{ labels:['China','India','France','Brazil','Israel','Turkey','Chile','Kenya','Jordan'],
+         datasets:[{ data:[4667,966,237,201,126,104,81,29,11],
+           backgroundColor:[CG_BLUE,CG_ORANGE,CG_GREEN,CG_BROWN,CG_LBLUE,CG_RED,CG_YELLOW,CG_DEEP,'#b0b8d8'],
+           borderColor:'#f5f6fb', borderWidth:3, hoverOffset:6 }] },
+  options:{
+    cutout:'52%', responsive:true, maintainAspectRatio:false,
+    animation:{duration:700},
+    plugins:{
+      legend:{ display:true, position:'right', labels:{ color:MUTED, font:{size:10}, padding:8, boxWidth:10, boxHeight:10 } },
+      tooltip:{...TT, callbacks:{ label:ctx=>` ${ctx.label}: ${ctx.raw.toLocaleString()}` } }
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ACADEMIC CHARTS
+// ═══════════════════════════════════════════════════
+hBar('acSchoolChart',
+  SCHOOLS.map(d=>d[0]), SCHOOLS.map(d=>d[1]),
+  SCHOOLS.map((_,i)=>PALETTE_CHART[i%PALETTE_CHART.length]+'cc')
+);
+
+hBar('acDeptChart',
+  DEPARTMENTS.map(d=>d[0]), DEPARTMENTS.map(d=>d[1]),
+  DEPARTMENTS.map((_,i)=>PALETTE_CHART[i%PALETTE_CHART.length]+'cc')
+);
+
+// Stacked level chart
+new Chart(document.getElementById('acLevelChart'), {
+  type:'bar',
+  data:{ labels:["Fu Eng.(Grad)","Business","SPS","SIPA","GSAS","Mailman","Law","CC"],
+    datasets:[
+      { label:'Graduate',     data:[1535,613,880,489,1200,321,228,0],   backgroundColor:CG_DEEP+'cc',  borderRadius:2 },
+      { label:'Undergraduate',data:[0,0,56,0,43,0,0,260],              backgroundColor:CG_LBLUE+'cc', borderRadius:2 }
+    ] },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:{duration:700},
+    scales:{
+      x:{ stacked:true, grid:{color:'rgba(114,135,226,0.1)'}, ticks:{color:MUTED,font:{size:10}}, border:{color:'#d1d8f0'} },
+      y:{ stacked:true, grid:{display:false}, ticks:{color:BLACK,font:{size:10}}, border:{color:'#d1d8f0'} }
+    },
+    plugins:{
+      legend:{ display:true, position:'top', labels:{ color:MUTED, font:{size:11}, boxWidth:12, boxHeight:12 } },
+      tooltip:{...TT}
+    }
+  }
+});
+
+hBar('acCgcSchoolChart',
+  ["Fu Eng. (Grad)","GSAS","SPS","SIPA"],
+  [2659,1208,894,477],
+  [CG_BLUE+'cc', CG_ORANGE+'cc', CG_GREEN+'cc', CG_BROWN+'cc']
+);
+
+// ═══════════════════════════════════════════════════
+// TIMELINE CHARTS
+// ═══════════════════════════════════════════════════
+vBar('tlFirstTermChart', FIRST_TERMS.map(d=>d[0]), FIRST_TERMS.map(d=>d[1]), CG_GREEN+'cc');
+vBar('tlGradChart',      GRAD_TERMS.map(d=>d[0]),  GRAD_TERMS.map(d=>d[1]),  CG_BLUE+'cc');
+
+const gradNow = [["China",868],["India",246],["Brazil",85],["France",78],["Israel",32],["Chile",26],["Turkey",25],["Kenya",6],["Jordan",5]];
+vBar('tlGradNowChart',
+  gradNow.map(d=>d[0]),
+  gradNow.map(d=>d[1]),
+  gradNow.map((_,i)=>[CG_BLUE,CG_ORANGE,CG_GREEN,CG_BROWN,CG_RED,CG_LBLUE,CG_YELLOW,CG_DEEP,'#b0b8d8'][i]+'cc')
+);
+
+
+// ═══════════════════════════════════════════════════
+// PDF DOWNLOAD — html2canvas + jsPDF
+// ═══════════════════════════════════════════════════
+let _currentPDFCountry = '';
+
+function openCentreAndTrack(country) {
+  _currentPDFCountry = country;
+  openCentre(country);
+
+}
+
+async function downloadCentrePDF(countryName) {
+  if (!countryName || typeof countryName !== 'string') countryName = window._cgcCountry;
+  const btn = document.getElementById('pdf-dl-btn');
+  if (btn) { btn.classList.add('loading'); btn.querySelector('.btn-text').textContent = 'Generating'; }
+
+  try {
+    const d = CGC_DATA[countryName];
+    if (!d) throw new Error('No data for ' + countryName);
+
+    const gradPct = Math.round(d.grad / d.total * 100);
+    const ugPct   = 100 - gradPct;
+    const maxS    = d.schools[0][1];
+    const maxDept = d.depts[0][1];
+    const maxG    = Math.max(...d.gradTerm.map(x=>x[1]));
+    const maxF    = Math.max(...d.firstTerm.map(x=>x[1]));
+
+    // ── Build a fixed-size, self-contained print div ──
+    const printDiv = document.createElement('div');
+    printDiv.id = 'pdf-print-target';
+    printDiv.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: 1400px; background: #f5f6fb;
+      font-family: 'Source Sans Pro', Arial, sans-serif;
+      font-size: 13px; color: #111827;
+    `;
+
+    const schoolRows = d.schools.map((s,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #e8eaf2;">
+        <span style="font-size:10px;color:#6b7280;min-width:16px;">${i+1}.</span>
+        <span style="flex:1;">${s[0]}</span>
+        <span style="font-weight:700;font-size:13px;">${s[1]}</span>
+        <div style="width:80px;height:5px;background:#e8eaf2;border-radius:2px;overflow:hidden;">
+          <div style="height:5px;background:${i===0?'#dd8328':'#7287e2'};width:${Math.round(s[1]/maxS*100)}%;"></div>
+        </div>
+      </div>`).join('');
+
+    const deptRows = d.depts.map((s,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #e8eaf2;">
+        <span style="font-size:10px;color:#6b7280;min-width:16px;">${i+1}.</span>
+        <span style="flex:1;">${s[0]}</span>
+        <span style="font-weight:700;font-size:13px;">${s[1]}</span>
+        <div style="width:80px;height:5px;background:#e8eaf2;border-radius:2px;overflow:hidden;">
+          <div style="height:5px;background:#8aaa79;width:${Math.round(s[1]/maxDept*100)}%;"></div>
+        </div>
+      </div>`).join('');
+
+    const gradBuckets = d.gradTerm.map(([lbl,val]) => `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <span style="font-size:14px;font-weight:700;color:#111827;">${val}</span>
+        <div style="width:100%;height:60px;background:#e8eaf2;border-radius:2px;display:flex;align-items:flex-end;">
+          <div style="width:100%;height:${Math.round(val/maxG*100)}%;background:#dd8328;border-radius:2px;"></div>
+        </div>
+        <span style="font-size:9px;color:#6b7280;text-align:center;line-height:1.2;">${lbl}</span>
+      </div>`).join('');
+
+    const firstBuckets = d.firstTerm.map(([lbl,val]) => `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <span style="font-size:14px;font-weight:700;color:#111827;">${val}</span>
+        <div style="width:100%;height:60px;background:#e8eaf2;border-radius:2px;display:flex;align-items:flex-end;">
+          <div style="width:100%;height:${Math.round(val/maxF*100)}%;background:#8aaa79;border-radius:2px;"></div>
+        </div>
+        <span style="font-size:9px;color:#6b7280;text-align:center;line-height:1.2;">${lbl}</span>
+      </div>`).join('');
+
+    printDiv.innerHTML = `
+      <!-- HEADER BAND -->
+      <div style="background:#2a3f8f;padding:24px 40px 0;border-bottom:3px solid #7287e2;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;">
+          <div>
+            <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#c0d6df;margin-bottom:6px;">Columbia Global Centre · Spring 2026</div>
+            <div style="font-size:34px;color:#ffffff;font-family:Georgia,serif;font-weight:400;line-height:1;">${countryName}</div>
+            <div style="font-size:12px;color:#c0d6df;margin-top:5px;">📍 ${d.city}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;font-style:italic;">Thinking + Doing</div>
+          </div>
+          <div style="text-align:right;color:#c0d6df;">
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;">Academic Year</div>
+            <div style="font-size:28px;color:#ffffff;font-family:Georgia,serif;">2025 – 26</div>
+          </div>
+        </div>
+        <!-- KPI STRIP -->
+        <div style="display:flex;background:rgba(0,0,0,0.2);margin:0 -40px;padding:0 40px;">
+          ${[
+            ['Total Students', d.total.toLocaleString()],
+            ['Graduate', d.grad.toLocaleString()],
+            ['Undergraduate', d.ug],
+            ['Grad Rate', gradPct + '%'],
+            ['Schools', d.schools.length]
+          ].map(([lbl,val],i) => `
+            <div style="flex:1;padding:14px 16px;border-right:1px solid rgba(255,255,255,0.1);text-align:center;${i===4?'border-right:none;':''}">
+              <div style="font-size:26px;color:#7287e2;font-family:Georgia,serif;line-height:1;">${val}</div>
+              <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#c0d6df;margin-top:4px;">${lbl}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- BODY GRID -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 40px;">
+
+        <!-- TOP SCHOOLS -->
+        <div style="background:#ffffff;border:1px solid #d1d8f0;border-top:3px solid #dd8328;padding:18px 20px;">
+          <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#6b7280;margin-bottom:14px;font-weight:700;">Top Schools</div>
+          ${schoolRows}
+        </div>
+
+        <!-- TOP DEPARTMENTS -->
+        <div style="background:#ffffff;border:1px solid #d1d8f0;border-top:3px solid #8aaa79;padding:18px 20px;">
+          <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#6b7280;margin-bottom:14px;font-weight:700;">Top Departments</div>
+          ${deptRows}
+        </div>
+
+        <!-- ACADEMIC LEVEL + FIRST TERM -->
+        <div style="background:#ffffff;border:1px solid #d1d8f0;border-top:3px solid #c0d6df;padding:18px 20px;">
+          <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#6b7280;margin-bottom:12px;font-weight:700;">Academic Level Split</div>
+          <div style="display:flex;height:18px;border-radius:2px;overflow:hidden;margin-bottom:8px;">
+            <div style="width:${gradPct}%;background:#2a3f8f;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:9px;color:#fff;font-weight:700;padding:0 6px;white-space:nowrap;">Grad ${gradPct}%</span>
+            </div>
+            <div style="width:${ugPct}%;background:#c0d6df;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:9px;color:#2a3f8f;font-weight:700;padding:0 6px;white-space:nowrap;">UG ${ugPct}%</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;font-size:11px;color:#6b7280;margin-bottom:18px;">
+            <span><span style="display:inline-block;width:9px;height:9px;background:#2a3f8f;border-radius:1px;margin-right:4px;vertical-align:middle;"></span>Graduate: ${d.grad}</span>
+            <span><span style="display:inline-block;width:9px;height:9px;background:#c0d6df;border-radius:1px;margin-right:4px;vertical-align:middle;"></span>Undergraduate: ${d.ug}</span>
+          </div>
+          <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#6b7280;margin-bottom:10px;font-weight:700;">First Term of Study</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">${firstBuckets}</div>
+        </div>
+
+        <!-- GRADUATION TERMS -->
+        <div style="background:#ffffff;border:1px solid #d1d8f0;border-top:3px solid #7287e2;padding:18px 20px;">
+          <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#6b7280;margin-bottom:10px;font-weight:700;">Expected Graduation Term</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">${gradBuckets}</div>
+          <div style="margin-top:12px;font-size:10px;color:#6b7280;letter-spacing:0.5px;">
+            ${d.gradTerm[0][1]} students graduating ${d.gradTerm[0][0]} &nbsp;·&nbsp; ${d.gradTerm[1][1]} in ${d.gradTerm[1][0]}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div style="background:#000000;padding:12px 40px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <span style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);">Columbia University Enrolled Student Dashboard v2 · Spring 2026</span>
+        <span style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);">Columbia Global Centers · ${countryName}</span>
+      </div>
+    `;
+
+    document.body.appendChild(printDiv);
+
+    // Small delay to allow layout to settle
+    await new Promise(r => setTimeout(r, 80));
+
+    const canvas = await html2canvas(printDiv, {
+      scale: 2.5,
+      useCORS: true,
+      backgroundColor: '#f5f6fb',
+      logging: false,
+      width: 1400,
+      windowWidth: 1400,
+    });
+
+    document.body.removeChild(printDiv);
+
+    const { jsPDF } = window.jspdf;
+    const imgData = canvas.toDataURL('image/png', 1.0);
+
+    // Always A4 landscape — scale to fit in one page
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pdfW = pdf.internal.pageSize.getWidth();  // 297mm
+    const pdfH = pdf.internal.pageSize.getHeight(); // 210mm
+
+    // Scale image to fill width, keeping aspect ratio
+    const imgW = pdfW;
+    const imgH = canvas.height * (pdfW / canvas.width);
+
+    if (imgH <= pdfH) {
+      // Fits on one page
+      pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+    } else {
+      // Scale down to fit single page
+      const scaleFactor = pdfH / imgH;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgW * scaleFactor, pdfH);
+    }
+
+    pdf.save('Columbia_Global_' + countryName.replace(/ /g, '_') + '_Spring2026.pdf');
+
+  } catch (err) {
+    console.error('PDF generation failed:', err);
+    alert('PDF generation failed: ' + err.message);
+  } finally {
+    // Clean up any stray print div
+    const stray = document.getElementById('pdf-print-target');
+    if (stray) stray.remove();
+    if (btn) {
+      btn.classList.remove('loading');
+      btn.querySelector('.btn-text').textContent = 'Download PDF';
+    }
+  }
+}
+
+</script>
+</body>
+</html>
